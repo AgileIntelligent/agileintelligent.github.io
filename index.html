@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>訂閱推播</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            height: 100vh;
+            background: #f9f9f9;
+            padding-top: 40px;
+        }
+
+        .banner {
+            background: #007bff;
+            color: white;
+            width: 100%;
+            text-align: center;
+            padding: 20px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+        }
+
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 300px;
+            margin-top: 100px;
+        }
+
+        label {
+            display: block;
+            font-size: 1rem;
+            margin-bottom: 10px;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            background: #007bff;
+            color: white;
+            font-size: 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="banner">訂閱推播</div>
+
+    <div class="container">
+        <label for="topic">請輸入訂閱項目</label>
+        <input type="text" id="topic" placeholder="輸入主題...">
+        <button onclick="subscribe()">送出</button>
+        <div id="token"></div>
+    </div>
+
+    <script type="module">
+        // 從 Firebase CDN 匯入需要的模組
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.5.0/firebase-app.js';
+        import { getMessaging, onMessage, getToken } from 'https://www.gstatic.com/firebasejs/11.5.0/firebase-messaging.js';
+
+        // Firebase 設定
+        const firebaseConfig = {
+            apiKey: "AIzaSyAEIb8uxnRZy_c-d_cNJJiAkTs3IRe9djI",
+            authDomain: "pwanotification-f35a1.firebaseapp.com",
+            projectId: "pwanotification-f35a1",
+            storageBucket: "pwanotification-f35a1.appspot.com",
+            messagingSenderId: "38995625859",
+            appId: "1:38995625859:web:1c088823e2e5b4d84498b6",
+            measurementId: "G-0GJXPT4G8B"
+        };
+
+        // 初始化 Firebase
+        const app = initializeApp(firebaseConfig);
+
+        // 初始化 Firebase Messaging
+        const messaging = getMessaging(app);
+
+        let token;
+
+        // // 設定前台推播訊息接收
+        // onMessage(messaging, (payload) => {
+        //     console.log("前台訊息:", payload);
+        //     const notificationTitle = payload.notification.title;
+        //     const notificationOptions = {
+        //         body: payload.notification.body,
+        //         icon: payload.notification.icon || '/logo.png',
+        //         badge: '/logo.png',
+        //         data: payload.data
+        //     };
+
+        //     new Notification(notificationTitle, notificationOptions);
+        // });
+
+        // 註冊推播權杖
+        window.subscribe = async function () {
+            token = await notifyHandler();
+
+            if (!token) {
+                alert("無效的推播權杖！");
+                return;
+            }
+
+            const topic = document.getElementById('topic').value;
+            if (topic.trim() === "") {
+                alert("請輸入訂閱主題！");
+                return;
+            }
+
+            // 將訂閱資訊傳送到後端 (這裡的 API 路徑需替換為你的後端處理邏輯)
+            fetch('https://script.google.com/macros/s/AKfycbwIaplnroGhDf9sJsDAEE78ygRGfSEFjgkXf3Ky7D_sysCW-h9N8gyla6lwz0RbRqrmHA/exec', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'text/plain'
+                },
+                body: JSON.stringify({ token: token, topic: topic })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('訂閱成功:', data);
+                    alert('成功訂閱 ' + topic + ' 主題！');
+                })
+                .catch(error => {
+                    console.error('訂閱失敗:', error);
+                    alert('訂閱失敗，請稍後再試');
+                });
+        };
+
+        // 註冊通知權限並獲取推播權杖
+        const notifyHandler = () => {
+            return new Promise((resolve) => {
+                try {
+                    if ('Notification' in window && 'serviceWorker' in navigator) {
+                        Notification.requestPermission().then(permission => {
+                            if (permission === 'granted') {
+                                console.log('通知權限已授予');
+
+                                // 取得推播權杖
+                                getToken(messaging, { vapidKey: 'BMrFf2HJg498VL9_xBDGOyJl31qz9mZf7ts0mgATFB6mlLUTQAmJoFobq2ABxpwG252BO0hUzz3v07IUUD2xKug' })
+                                    .then((currentToken) => {
+                                        if (currentToken) {
+                                            resolve(currentToken);
+                                            console.log("推播權杖:" + currentToken);
+                                        } else {
+                                            console.log("沒有權杖，請允許通知");
+                                        }
+                                    })
+                                    .catch((err) => {
+                                        console.log("取得權杖時發生錯誤:" + JSON.stringify(err));
+                                        resolve(null);
+                                    });
+
+                            } else {
+                                console.log('通知權限被拒絕');
+                                resolve(null);
+                            }
+
+                        });
+                    } else {
+                        console.error('瀏覽器不支援通知或 Service Worker');
+                        resolve(null);
+                    }
+                }
+                catch (error) {
+                    console.error("錯誤:", error);
+                    resolve(null);
+                }
+            });
+        };
+    </script>
+
+</body>
+
+</html>
