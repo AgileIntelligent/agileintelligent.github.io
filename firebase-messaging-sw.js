@@ -96,7 +96,7 @@ const notification_click_handler = async function (event) {
         return;
     }
 
-    const link = payload.click_action || payload.url || "/pwa";
+    const link = payload.click_action || payload.url || "/";
 
     // // FM should only open/focus links from app's origin.
     // const url = new URL(link, self.location.href);
