@@ -6,13 +6,13 @@ importScripts('https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging-com
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-    apiKey: "AIzaSyAlUakCOf5NUgvLf5Jx_d4QvhdhOAksPu0",
-    authDomain: "notifications-2f709.firebaseapp.com",
-    databaseURL: "https://notifications-2f709.firebaseio.com",
-    projectId: "notifications-2f709",
-    storageBucket: "notifications-2f709.firebasestorage.app",
-    messagingSenderId: "591543486728",
-    appId: "1:591543486728:web:c4579e56a9402d1c9e44bd"
+    apiKey: "AIzaSyClyVF0wk2H8KQsOaLz1J-sBAMcrbJOLpo",
+    authDomain: "pwanotify-ebca0.firebaseapp.com",
+    projectId: "pwanotify-ebca0",
+    storageBucket: "pwanotify-ebca0.firebasestorage.app",
+    messagingSenderId: "441106763379",
+    appId: "1:441106763379:web:7fb05ca9a2ad6cd9b6e406",
+    measurementId: "G-ZJDNEQ7191"
 };
 
 class CustomPushEvent extends Event {
