@@ -6,13 +6,13 @@ importScripts('https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging-com
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-    apiKey: "AIzaSyAEIb8uxnRZy_c-d_cNJJiAkTs3IRe9djI",
-    authDomain: "pwanotification-f35a1.firebaseapp.com",
-    projectId: "pwanotification-f35a1",
-    storageBucket: "pwanotification-f35a1.appspot.com",
-    messagingSenderId: "38995625859",
-    appId: "1:38995625859:web:1c088823e2e5b4d84498b6",
-    measurementId: "G-0GJXPT4G8B"
+    apiKey: "AIzaSyAlUakCOf5NUgvLf5Jx_d4QvhdhOAksPu0",
+    authDomain: "notifications-2f709.firebaseapp.com",
+    databaseURL: "https://notifications-2f709.firebaseio.com",
+    projectId: "notifications-2f709",
+    storageBucket: "notifications-2f709.firebasestorage.app",
+    messagingSenderId: "591543486728",
+    appId: "1:591543486728:web:c4579e56a9402d1c9e44bd"
 };
 
 class CustomPushEvent extends Event {
@@ -192,20 +192,6 @@ messaging.onBackgroundMessage(function (payload) {
 //     self.registration.showNotification(notificationTitle, notificationOptions);
 // });
 
-const CACHE_NAME = 'cwwl-cache-v1';
-const urlsToCache = [
-    '/',
-    '/manifest.json',
-    '/css/w3.css',
-    '/css/w3-theme-black.css',
-    '/css/font-awesome.min.css',
-    '/js/exceljs.min.js',
-    '/js/jspdf.umd.min.js',
-    '/js/source-han-sans-normal.js',
-    '/screenshot.png',
-    '/favicon.png'
-];
-
 self.addEventListener('notificationclick', notification_click_handler);
 
 /** Returns a promise that resolves after given time passes. */
@@ -265,30 +251,4 @@ function sendMessagePayloadInternalToWindows(clientList, internalPayload) {
 
 self.addEventListener("install", event => {
     console.log("[Service Worker] Install");
-
-    event.waitUntil(
-        (async () => {
-            const cache = await caches.open(CACHE_NAME);
-            console.log("[Service Worker] Caching all: app shell and content");
-            await cache.addAll(urlsToCache);
-        })(),
-    );
-});
-
-self.addEventListener("fetch", event => {
-    event.respondWith(
-        (async () => {
-            const r = await caches.match(event.request);
-            console.log(`[Service Worker] Fetching resource: ${event.request.url}`);
-            if (r) {
-                console.log(`[Service Worker] Read Cache: ${event.request.url}`);
-                return r;
-            }
-            const response = await fetch(event.request);
-            const cache = await caches.open(CACHE_NAME);
-            // console.log(`[Service Worker] Caching new resource: ${event.request.url}`);
-            // cache.put(event.request, response.clone());
-            return response;
-        })(),
-    );
 });
