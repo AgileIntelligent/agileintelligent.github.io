@@ -349,7 +349,7 @@
                 .then(response => response.json())
                 .then(data => {
                     console.log('訂閱成功:', data);
-                    alert('成功訂閱 ' + topic + ' 主題！');
+                    alert('成功訂閱，識別碼：' + topic);
                     window.location.reload();
                 })
                 .catch(error => {
